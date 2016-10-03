@@ -1,18 +1,17 @@
 /*
-		This file has been copied and (slightly) modified from:
-			https://brendaningram.com/article/sine-wave-generator-in-golang/
+	This file has been copied and (slightly) modified from:
+		https://brendaningram.com/article/sine-wave-generator-in-golang/
 
 */
-
 
 package main
 
 import (
 	"bytes"
 	"encoding/binary"
-	"math/rand"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 )
 
@@ -123,21 +122,21 @@ func open(filename string, samplesPerSecond uint32, bitsPerSample uint8, channel
 
 func write(file *os.File, waveform []uint8) {
 
-	// We need to write to the file as a []uint8 slice.
-	// Convert our []uint16 waveform slice into []uint8.
-	data := make([]uint8, len(waveform)*2)
-	j := 0
-	for _, val := range waveform {
-		var h, l uint8 = uint8(val >> 8), uint8(val & 0xff)
-		data[j] = l
-		j++
-		data[j] = h
-		j++
-	}
-
-	// Write the data starting at offset 44, which is the first offset after the header.
-	fmt.Println("Writing data")
-	file.WriteAt(data, 44)
+	// // We need to write to the file as a []uint8 slice.
+	// // Convert our []uint16 waveform slice into []uint8.
+	// data := make([]uint8, len(waveform)*2)
+	// j := 0
+	// for _, val := range waveform {
+	// 	var h, l uint8 = uint8(val >> 8), uint8(val & 0xff)
+	// 	data[j] = l
+	// 	j++
+	// 	data[j] = h
+	// 	j++
+	// }
+	//
+	// // Write the data starting at offset 44, which is the first offset after the header.
+	// fmt.Println("Writing data")
+	file.WriteAt(waveform, 44)
 
 }
 
@@ -214,13 +213,13 @@ func main() {
 
 	var (
 		initialValue float64 = 128.0
-		value = initialValue
+		value                = initialValue
 	)
 
 	for sample := uint32(0); sample < numberOfSamples; sample++ {
 		value = clamp(rand.NormFloat64() + value)
 		waveform[sample] = uint8(value)
-		fmt.Println(waveform[sample])
+		//fmt.Println(waveform[sample])
 	}
 
 	file := open(argFileName, samplesPerSecond, bitsPerSample, 1)
