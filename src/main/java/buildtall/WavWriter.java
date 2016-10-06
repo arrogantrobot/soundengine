@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WavWriter {
@@ -28,24 +29,28 @@ public class WavWriter {
     return b;
   }
 
-  private byte[] combineStreams(byte[] a, byte[] b){
-    ByteBuffer bb = ByteBuffer.allocate(a.length);
-    for (int i=0; i < a.length; i++) {
-      bb.put(i, clamp((byte)((a[i] + b[i]))));
+  private ByteBuffer combineStreams(ByteBuffer a, ByteBuffer b){
+    int size = a.capacity();
+//    System.out.println(Arrays.toString(a.array()));
+//    System.out.println(Arrays.toString(b.array()));
+    ByteBuffer bb = ByteBuffer.allocate(size);
+    for (int i=0; i < size; i++) {
+      bb.put(clamp((byte)((a.get() + b.get()))));
     }
-    return bb.array();
+    bb.flip();
+    return bb;
   }
 
   private byte[] getMergedSamples(int samples) {
     ByteBuffer bb = ByteBuffer.allocate(samples);
-    bb.put(wavProviders.get(0).getSamples(samples), 0, samples);
+    bb.put(wavProviders.get(0).getSamples(samples));
+    bb.flip();
 
     if (wavProviders.size() > 1) {
       for(int i=1; i < wavProviders.size(); i++){
-        byte[] cmb = combineStreams(bb.array(), wavProviders.get(i).getSamples(samples));
-        for(int j=0;j<samples; j++) {
-          bb.put(j, cmb[j]);
-        }
+        ByteBuffer cmb = combineStreams(bb.duplicate(), ByteBuffer.wrap(wavProviders.get(i).getSamples(samples)));
+        bb.position(0);
+        bb.put(cmb);
       }
     }
     return bb.array();

@@ -20,8 +20,9 @@ class SoundTest {
     }
 
     WavWriter wavWriter = new WavWriter(Configure.BITS_PER_SAMPLE);
-    wavWriter.addWavProvider(new SquareWave(200, 400));
-    //wavWriter.addWavProvider(new SquareWave(200, 800));
+    //wavWriter.addWavProvider(new SquareWave(100, 400));
+    wavWriter.addWavProvider(new BrownNoise8Bit());
+    wavWriter.addWavProvider(new SquareWave(150, 100));
     wavWriter.writeWav(Configure.NUM_SAMPLES, output);
 
   }

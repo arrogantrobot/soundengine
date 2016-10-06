@@ -1,18 +1,21 @@
 package buildtall;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class SquareWave implements WavProvider {
   int amplitude;
   int samplesPerCycle;
-  byte cycleLow = 1;
-  byte cycleHigh = (byte)(cycleLow + amplitude);
+  byte cycleLow;
+  byte cycleHigh;
 
   ByteBuffer wave;
 
   public SquareWave(int amplitude, int samplesPerCycle) {
     this.amplitude = amplitude;
     this.samplesPerCycle = samplesPerCycle;
+    this.cycleLow = (byte)(-(amplitude/2));
+    this.cycleHigh = (byte)(cycleLow + amplitude);
     this.wave = getWave();
   }
 
@@ -20,11 +23,12 @@ public class SquareWave implements WavProvider {
     int length = samplesPerCycle / 2;
     ByteBuffer bb = ByteBuffer.allocate(samplesPerCycle);
     for (int i=0; i< length; i++) {
-      bb.put(i, cycleHigh);
+      bb.put(cycleHigh);
     }
     for (int i=0; i< length; i++) {
-      bb.put(length, cycleLow);
+      bb.put(cycleLow);
     }
+    bb.flip();
     return bb;
   }
 
@@ -32,17 +36,12 @@ public class SquareWave implements WavProvider {
     int wholeCopies = samples / samplesPerCycle;
     int fractions = samples % samplesPerCycle;
     ByteBuffer bb = ByteBuffer.allocate(samples);
-
     for (int i=0; i < wholeCopies; i++) {
-      for(byte b : wave.array()) {
-        bb.put(b);
-      }
-    }
-    int fractionStart = wholeCopies * samplesPerCycle;
-    for(int i=fractionStart; i < samples; i++) {
-      bb.put(i, wave.get(i-fractionStart));
+      bb.put(wave.duplicate());
     }
 
+    bb.put(wave.array(), 0, fractions);
+    bb.flip();
     return bb;
   }
 
