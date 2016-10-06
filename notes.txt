@@ -1,0 +1,5 @@
+https://brendaningram.com/article/sine-wave-generator-in-golang/
+http://soundfile.sapp.org/doc/WaveFormat/
+https://en.wikipedia.org/wiki/Differential_pulse-code_modulation
+http://willdrevo.com/fingerprinting-and-audio-recognition-with-python/
+https://github.com/andrew-hoffman/halfnes
